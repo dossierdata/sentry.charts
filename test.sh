@@ -1,0 +1,1 @@
+helm template sentry ./sentry -s templates/deployment-relay.yaml -s templates/configmap-relay.yaml -s templates/configmap-relay-projects.yaml -s templates/service-relay.yaml --values sentry/values.yaml  --dry-run > test.yaml

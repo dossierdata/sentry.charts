@@ -1,5 +1,8 @@
 prefix:
 
+upstream:
+  host: "https://sentry.ddat.io/"
+
 user:
   create: true
   email: admin@sentry.local
@@ -22,26 +25,26 @@ images:
     # repository: getsentry/sentry
     # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
-    imagePullSecrets: []
+    imagePullSecrets: [ ]
   snuba:
     # repository: getsentry/snuba
     # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
-    imagePullSecrets: []
+    imagePullSecrets: [ ]
   relay:
     # repository: getsentry/relay
     # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
-    imagePullSecrets: []
+    imagePullSecrets: [ ]
   symbolicator:
     # repository: getsentry/symbolicator
     tag: 0.5.1
     # pullPolicy: IfNotPresent
-    imagePullSecrets: []
+    imagePullSecrets: [ ]
 
 serviceAccount:
   # serviceAccount.annotations -- Additional Service Account annotations.
-  annotations: {}
+  annotations: { }
   # serviceAccount.enabled -- If `true`, a custom Service Account will be used.
   enabled: false
   # serviceAccount.name -- The base name of the ServiceAccount to use. Will be appended with e.g. `snuba-api` or `web` for the pods accordingly.
@@ -51,19 +54,19 @@ serviceAccount:
 
 relay:
   replicas: 1
-  mode: managed
-  env: []
+  mode: proxy
+  env: [ ]
   probeFailureThreshold: 5
   probeInitialDelaySeconds: 10
   probePeriodSeconds: 10
   probeSuccessThreshold: 1
   probeTimeoutSeconds: 2
-  resources: {}
-  affinity: {}
-  nodeSelector: {}
-  securityContext: {}
+  resources: { }
+  affinity: { }
+  nodeSelector: { }
+  securityContext: { }
   service:
-    annotations: {}
+    annotations: { }
   # tolerations: []
   # podLabels: []
 
@@ -72,8 +75,40 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
-  sidecars: []
-  volumes: []
+  sidecars: [ ]
+  volumes: [ ]
+
+  projects:
+    2: |-
+      {
+        "slug": "core",
+        "publicKeys": [
+          {
+            "publicKey": "7f9efe5559924c62a91294643885fff6",
+            "isEnabled": true
+          }
+        ],
+        "config": {
+          "allowedDomains": [
+            "*"
+          ]
+        }
+      }
+    8: |-
+      {
+        "slug": "core",
+        "publicKeys": [
+          {
+            "publicKey": "7f9efe5559924c62a91294643885fff6",
+            "isEnabled": true
+          }
+        ],
+        "config": {
+          "allowedDomains": [
+            "*"
+          ]
+        }
+      }
 
 geodata:
   path: ""
@@ -86,18 +121,18 @@ sentry:
     # if using filestore backend filesystem with RWO access, set strategyType to Recreate
     strategyType: RollingUpdate
     replicas: 1
-    env: []
+    env: [ ]
     probeFailureThreshold: 5
     probeInitialDelaySeconds: 10
     probePeriodSeconds: 10
     probeSuccessThreshold: 1
     probeTimeoutSeconds: 2
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     service:
-      annotations: {}
+      annotations: { }
     # tolerations: []
     # podLabels: []
     # Mount and use custom CA
@@ -110,8 +145,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: []
-    volumes: []
+    sidecars: [ ]
+    volumes: [ ]
 
   features:
     orgSubdomains: false
@@ -120,10 +155,10 @@ sentry:
   worker:
     replicas: 3
     # concurrency: 4
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
     # tolerations: []
     # podLabels: []
 
@@ -139,17 +174,17 @@ sentry:
       periodSeconds: 60
       timeoutSeconds: 10
       failureThreshold: 3
-    sidecars: []
-    volumes: []
+    sidecars: [ ]
+    volumes: [ ]
 
   ingestConsumer:
     replicas: 1
     # concurrency: 4
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
@@ -161,8 +196,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
-    sidecars: []
-    volumes: []
+    sidecars: [ ]
+    volumes: [ ]
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -170,52 +205,52 @@ sentry:
 
   cron:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
     # tolerations: []
     # podLabels: []
-    sidecars: []
-    volumes: []
+    sidecars: [ ]
+    volumes: [ ]
   subscriptionConsumerEvents:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: []
-    volumes: []
+    sidecars: [ ]
+    volumes: [ ]
     # noStrictOffsetReset: false
   subscriptionConsumerTransactions:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: []
-    volumes: []
+    sidecars: [ ]
+    volumes: [ ]
     # noStrictOffsetReset: false
   postProcessForward:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: []
-    volumes: []
+    sidecars: [ ]
+    volumes: [ ]
   cleanup:
     successfulJobsHistoryLimit: 5
     failedJobsHistoryLimit: 5
@@ -224,30 +259,30 @@ sentry:
     enabled: true
     schedule: "0 0 * * *"
     days: 90
-    sidecars: []
-    volumes: []
-    serviceAccount: {}
+    sidecars: [ ]
+    volumes: [ ]
+    serviceAccount: { }
 
 snuba:
   api:
     replicas: 1
     # set command to ["snuba","api"] if securityContext.runAsUser > 0
     # see: https://github.com/getsentry/snuba/issues/956
-    command: {}
+    command: { }
     #   - snuba
     #   - api
-    env: []
+    env: [ ]
     probeInitialDelaySeconds: 10
     liveness:
       timeoutSeconds: 2
     readiness:
       timeoutSeconds: 2
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     service:
-      annotations: {}
+      annotations: { }
     # tolerations: []
     # podLabels: []
 
@@ -256,16 +291,16 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: []
-    volumes: []
+    sidecars: [ ]
+    volumes: [ ]
 
   consumer:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -288,11 +323,11 @@ snuba:
 
   outcomesConsumer:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -315,11 +350,11 @@ snuba:
 
   replacer:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -330,33 +365,33 @@ snuba:
 
   subscriptionConsumerEvents:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
 
   subscriptionConsumerTransactions:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
 
   sessionsConsumer:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -379,11 +414,11 @@ snuba:
 
   transactionsConsumer:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    env: [ ]
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -405,10 +440,10 @@ snuba:
     #       medium: Memory
 
   dbInitJob:
-    env: []
+    env: [ ]
 
   migrateJob:
-    env: []
+    env: [ ]
 
   cleanupErrors:
     successfulJobsHistoryLimit: 5
@@ -416,9 +451,9 @@ snuba:
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
-    sidecars: []
-    volumes: []
-    serviceAccount: {}
+    sidecars: [ ]
+    volumes: [ ]
+    serviceAccount: { }
 
   cleanupTransactions:
     successfulJobsHistoryLimit: 5
@@ -427,9 +462,9 @@ snuba:
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
-    sidecars: []
-    volumes: []
-    serviceAccount: {}
+    sidecars: [ ]
+    volumes: [ ]
+    serviceAccount: { }
 
 hooks:
   enabled: true
@@ -441,38 +476,38 @@ hooks:
       # repository: subfuzion/netcat
       # tag: latest
       # pullPolicy: IfNotPresent
-      imagePullSecrets: []
-    env: []
+      imagePullSecrets: [ ]
+    env: [ ]
     # podLabels: []
-    podAnnotations: {}
+    podAnnotations: { }
     resources:
       limits:
         memory: 64Mi
       requests:
         cpu: 100m
         memory: 64Mi
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
   dbInit:
-    env: []
+    env: [ ]
     # podLabels: []
-    podAnnotations: {}
+    podAnnotations: { }
     resources:
       limits:
         memory: 2048Mi
       requests:
         cpu: 300m
         memory: 2048Mi
-    sidecars: []
-    volumes: []
-    affinity: {}
-    nodeSelector: {}
+    sidecars: [ ]
+    volumes: [ ]
+    affinity: { }
+    nodeSelector: { }
     # tolerations: []
   snubaInit:
     # podLabels: []
-    podAnnotations: {}
+    podAnnotations: { }
     resources:
       limits:
         cpu: 2000m
@@ -480,11 +515,11 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
-    affinity: {}
-    nodeSelector: {}
+    affinity: { }
+    nodeSelector: { }
     # tolerations: []
-  snubaMigrate: {}
-    # podLabels: []
+  snubaMigrate: { }
+  # podLabels: []
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
@@ -510,12 +545,12 @@ symbolicator:
   enabled: false
   api:
     replicas: 1
-    env: []
+    env: [ ]
     probeInitialDelaySeconds: 10
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
+    resources: { }
+    affinity: { }
+    nodeSelector: { }
+    securityContext: { }
     # tolerations: []
     # podLabels: []
     # priorityClassName: "xxx"
@@ -562,13 +597,13 @@ service:
   name: sentry
   type: ClusterIP
   externalPort: 9000
-  annotations: {}
+  annotations: { }
   # externalIPs:
   # - 192.168.0.1
   # loadBalancerSourceRanges: []
 
 # https://github.com/settings/apps (Create a Github App)
-github: {}
+github: { }
 # github:
 #   appId: "xxxx"
 #   appName: MyAppName
@@ -578,12 +613,12 @@ github: {}
 #   webhookSecret:  "xxxxx`"
 
 # https://developers.google.com/identity/sign-in/web/server-side-flow#step_1_create_a_client_id_and_client_secret
-google: {}
+google: { }
 # google:
 #   clientId:
 #   clientSecret:
 
-slack: {}
+slack: { }
 # slack:
 #   clientId:
 #   clientSecret:
@@ -594,7 +629,7 @@ nginx:
   enabled: true
   containerPort: 8080
   existingServerBlockConfigmap: '{{ template "sentry.fullname" . }}'
-  resources: {}
+  resources: { }
   replicaCount: 1
   service:
     type: ClusterIP
@@ -663,15 +698,15 @@ filestore:
       ## be used
       existingClaim: ""
 
-  gcs: {}
+  gcs: { }
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
-    # credentialsFile: credentials.json
+  # credentialsFile: credentials.json
   # bucketName:
 
   ## Currently unconfigured and changing this has no impact on the template configuration.
-  s3: {}
+  s3: { }
   #  accessKey:
   #  secretKey:
   #  bucketName:
@@ -682,7 +717,7 @@ filestore:
 
 config:
   # No YAML Extension Config Given
-  configYml: {}
+  configYml: { }
   sentryConfPy: |
     # No Python Extension Config Given
   snubaSettingsPy: |
@@ -868,11 +903,11 @@ rabbitmq:
     create: true
   persistence:
     enabled: true
-  resources: {}
-  memoryHighWatermark: {}
+  resources: { }
+  memoryHighWatermark: { }
     # enabled: true
     # type: relative
-    # value: 0.4
+  # value: 0.4
 
   extraSecrets:
     load-definition:
@@ -956,7 +991,7 @@ metrics:
 
   ## Metrics exporter resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  resources: {}
+  resources: { }
   #   limits:
   #     cpu: 100m
   #     memory: 100Mi
@@ -964,16 +999,16 @@ metrics:
   #     cpu: 100m
   #     memory: 100Mi
 
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-  securityContext: {}
+  nodeSelector: { }
+  tolerations: [ ]
+  affinity: { }
+  securityContext: { }
   # schedulerName:
   # Optional extra labels for pod, i.e. redis-client: "true"
   # podLabels: []
   service:
     type: ClusterIP
-    labels: {}
+    labels: { }
 
   image:
     repository: prom/statsd-exporter
@@ -983,9 +1018,9 @@ metrics:
   # Enable this if you're using https://github.com/coreos/prometheus-operator
   serviceMonitor:
     enabled: false
-    additionalLabels: {}
+    additionalLabels: { }
     namespace: ""
-    namespaceSelector: {}
+    namespaceSelector: { }
     # Default: scrape .Release.Namespace only
     # To scrape all, use the following:
     # namespaceSelector:
