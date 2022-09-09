@@ -1,0 +1,182 @@
+---
+# Source: sentry/templates/deployment-relay.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentry-relay
+  labels:
+    app: sentry
+    chart: "sentry-15.2.1"
+    release: "sentry"
+    heritage: "Helm"
+    app.kubernetes.io/managed-by: "Helm"
+  annotations:
+    meta.helm.sh/release-name: "sentry"
+    meta.helm.sh/release-namespace: "dossierdata-support-sentry"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "25"
+spec:
+  selector:
+    matchLabels:
+      app: sentry
+      release: "sentry"
+      role: relay
+  replicas: 1
+  revisionHistoryLimit: 10
+  template:
+    metadata:
+      annotations:
+        checksum/relay: 8074a66c015a8309dc9bdef7524b89bb223749847663f454012dba4e7ed06cc3
+        checksum/config.yaml: d3a6a11d7f49238bdf15415bcf3973f6bce3f1f08d6a0b5b857c495294eb8488
+      labels:
+        app: sentry
+        release: "sentry"
+        role: relay
+    spec:
+      affinity:
+      initContainers:
+        - name: sentry-relay-init
+          image: "getsentry/relay:22.8.0"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "credentials"
+            - "generate"
+          env:
+            - name: RELAY_PORT
+              value: '3000'
+          volumeMounts:
+            - name: credentials
+              mountPath: /work/.relay
+            - name: config
+              mountPath: /work/.relay/config.yml
+              subPath: config.yml
+              readOnly: true
+      containers:
+      - name: sentry-relay
+        image: "getsentry/relay:22.8.0"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        env:
+        - name: RELAY_PORT
+          value: '3000'
+        volumeMounts:
+          - name: credentials
+            mountPath: /work/.relay
+          - name: config
+            mountPath: /work/.relay/config.yml
+            subPath: config.yml
+            readOnly: true
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /api/relay/healthcheck/live/
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /api/relay/healthcheck/ready/
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources:
+            {}
+      volumes:
+      - name: config
+        configMap:
+          name: sentry-relay
+          defaultMode: 0644
+      - name: credentials
+        emptyDir: {}
+---
+# Source: sentry/templates/configmap-relay.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentry-relay
+  labels:
+    app: sentry
+    chart: "sentry-15.2.1"
+    release: "sentry"
+    heritage: "Helm"
+data:
+  config.yml: |-
+    relay:
+      mode: proxy
+      upstream: "https://sentry.ddat.io/"
+      host: 0.0.0.0
+      port: 3000
+
+    # No YAML relay config given
+---
+# Source: sentry/templates/configmap-relay-projects.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentry-relay-projects
+  labels:
+    app: sentry
+    chart: "sentry-15.2.1"
+    release: "sentry"
+    heritage: "Helm"
+data:
+  2.json: |-
+    {
+      "slug": "core",
+      "publicKeys": [
+        {
+          "publicKey": "7f9efe5559924c62a91294643885fff6",
+          "isEnabled": true
+        }
+      ],
+      "config": {
+        "allowedDomains": [
+          "*"
+        ]
+      }
+    }
+  8.json: |-
+    {
+      "slug": "core",
+      "publicKeys": [
+        {
+          "publicKey": "7f9efe5559924c62a91294643885fff6",
+          "isEnabled": true
+        }
+      ],
+      "config": {
+        "allowedDomains": [
+          "*"
+        ]
+      }
+    }
+---
+# Source: sentry/templates/service-relay.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentry-relay
+  annotations:
+  labels:
+    app: sentry
+    chart: "sentry-15.2.1"
+    release: "sentry"
+    heritage: "Helm"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: sentry-relay
+  selector:
+    app: sentry
+    role: relay

@@ -79,9 +79,6 @@ spec:
               mountPath: /work/.relay/config.yml
               subPath: config.yml
               readOnly: true
-            - name: projects
-              mountPath: /work/.relay/projects
-              readOnly: true
       {{- if .Values.dnsPolicy }}
       dnsPolicy: {{ .Values.dnsPolicy | quote }}
       {{- end }}
@@ -107,9 +104,6 @@ spec:
           - name: config
             mountPath: /work/.relay/config.yml
             subPath: config.yml
-            readOnly: true
-          - name: projects
-            mountPath: /work/.relay/projects
             readOnly: true
           {{- if .Values.geodata.volumeName }}
           - name: {{ .Values.geodata.volumeName }}
@@ -147,10 +141,6 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-relay
-          defaultMode: 0644
-      - name: projects
-        configMap:
-          name: {{ template "sentry.fullname" . }}-relay-projects
           defaultMode: 0644
       - name: credentials
         emptyDir: {}
